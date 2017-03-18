@@ -1,22 +1,24 @@
 # -*- coding:utf-8 -*-
 # This script will download all the 10-K, 10-Q and 8-K
-# provided that of company symbol and its cik code.
+# provided that of company symbol and its CIK code.
 
-import requests
 import os
 import errno
+
+import requests
 from bs4 import BeautifulSoup
 from config import DEFAULT_DATA_PATH
+
+EDGAR_REQUEST_URL = "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK="
 
 
 class SecCrawler():
     def __init__(self, output_directory=None):
-        self.hello = "Welcome to Sec Cralwer!"
         self.output = output_directory or DEFAULT_DATA_PATH
         print("Path of the directory where data will be saved: " + self.output)
 
-    def make_directory(self, company_code, cik, priorto, filing_type):
-        # Making the directory to save comapny filings
+    def make_directory(self, company_code, cik, prior_to, filing_type):
+        # Making the directory to save company filings
         path = os.path.join(self.output, company_code, cik, filing_type)
 
         if not os.path.exists(path):
@@ -134,6 +136,7 @@ class SecCrawler():
             cik
         ) + "&type=13F&dateb=" + str(
             priorto
+        base_url = EDGAR_REQUEST_URL + str(cik) + "&type=13F&dateb=" + str(
         ) + "&owner=exclude&output=xml&count=" + str(count)
         print("started 10-Q " + str(company_code))
         r = requests.get(base_url)
