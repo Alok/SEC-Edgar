@@ -4,12 +4,12 @@ from crawler import SecCrawler
 
 
 def test():
-    t1 = time.time()
-    # file containig company name and corresponding cik codes
+    start_time = time.time()
+    # file containig company name and corresponding CIK codes
     seccrawler = SecCrawler()
 
     company_code_list = list()  # company code list
-    cik_list = list()  # cik code list
+    cik_list = list()  # CIK code list
     date_list = list()  # pror date list
     count_list = list()
 
@@ -18,7 +18,7 @@ def test():
     except:
         print("No input file Found")
 
-    # get the comapny  quotes and cik number from the file.
+    # get the company quotes and CIK number from the file.
     for columns in (raw.strip().split() for raw in crs):
         company_code_list.append(columns[0])
         cik_list.append(columns[1])
@@ -40,9 +40,9 @@ def test():
             str(cik_list[i]), str(date_list[i]), str(count_list[i])
         )
 
-    t2 = time.time()
+    end_time = time.time()
     print("Total Time taken: "),
-    print(t2 - t1)
+    print(end_time - start_time)
     crs.close()
 
 
