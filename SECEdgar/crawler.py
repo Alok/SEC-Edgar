@@ -17,25 +17,26 @@ class SecCrawler():
         self.output = output_directory or DEFAULT_DATA_PATH
         print("Path of the directory where data will be saved: " + self.output)
 
-    def make_directory(self, company_code, cik, prior_to, filing_type):
+    def make_directory(self, cik, prior_to, filing_type):
         # Making the directory to save company filings
-        path = os.path.join(self.output, company_code, cik, filing_type)
+        path = os.path.join(self.output, cik, filing_type)
 
         if not os.path.exists(path):
             try:
                 os.makedirs(path)
             except OSError as exception:
                 if exception.errno != errno.EEXIST:
+                    print("ERROR in making directory.")
                     raise
 
     def save_in_directory(
-        self, company_code, cik, prior_to, doc_list, doc_name_list, filing_type
+        self, cik, prior_to, doc_list, doc_name_list, filing_type
     ):
         # Save every text document into its respective folder
         for i, base_url in enumerate(doc_list):
 
             path = os.path.join(
-                self.output, company_code, cik, filing_type, doc_name_list[i]
+                self.output, cik, filing_type, doc_name_list[i]
             )
 
             data = requests.get(base_url).text
@@ -43,102 +44,17 @@ class SecCrawler():
             with open(path, "ab") as f:
                 f.write(data.encode('ascii', 'ignore'))
 
-    def filing_10Q(self, company_code, cik, priorto, count):
-
-        self.make_directory(company_code, cik, priorto, '10-Q')
-
-        # generate the url to crawl
-        base_url = "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=" + str(
-            cik
-        ) + "&type=10-Q&dateb=" + str(
-            priorto
-        ) + "&owner=exclude&output=xml&count=" + str(count)
-        print("started 10-Q " + str(company_code))
-        r = requests.get(base_url)
-        data = r.text
-
-        # get doc list data
-        doc_list, doc_name_list = self.create_document_list(data)
-
+    def filing_13F(self, cik, prior_to, count):
         try:
-            self.save_in_directory(
-                company_code, cik, priorto, doc_list, doc_name_list, '10-Q'
-            )
-        except Exception as e:
-            print(str(e))
-
-        print("Successfully downloaded all the files")
-
-    def filing_10K(self, company_code, cik, priorto, count):
-
-        self.make_directory(company_code, cik, priorto, '10-K')
-
-        # generate the url to crawl
-        base_url = "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=" + str(
-            cik
-        ) + "&type=10-K&dateb=" + str(
-            priorto
-        ) + "&owner=exclude&output=xml&count=" + str(count)
-        print("started 10-K " + str(company_code))
-
-        r = requests.get(base_url)
-        data = r.text
-
-        # get doc list data
-        doc_list, doc_name_list = self.create_document_list(data)
-
-        try:
-            self.save_in_directory(
-                company_code, cik, priorto, doc_list, doc_name_list, '10-K'
-            )
-        except Exception as e:
-            print(str(e))
-
-        print("Successfully downloaded all the files")
-
-    def filing_8K(self, company_code, cik, priorto, count):
-        try:
-            self.make_directory(company_code, cik, priorto, '8-K')
+            self.make_directory(cik, prior_to, '13-F')
         except Exception as e:
             print(str(e))
 
         # generate the url to crawl
-        base_url = "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=" + str(
-            cik
-        ) + "&type=8-K&dateb=" + str(
-            priorto
-        ) + "&owner=exclude&output=xml&count=" + str(count)
-
-        print("started 8-K" + str(company_code))
-        r = requests.get(base_url)
-        data = r.text
-
-        # get doc list data
-        doc_list, doc_name_list = self.create_document_list(data)
-
-        try:
-            self.save_in_directory(
-                company_code, cik, priorto, doc_list, doc_name_list, '8-K'
-            )
-        except Exception as e:
-            print(str(e))
-
-        print("Successfully downloaded all the files")
-
-    def filing_13F(self, company_code, cik, priorto, count):
-        try:
-            self.make_directory(company_code, cik, priorto, '13-F')
-        except Exception as e:
-            print(str(e))
-
-        # generate the url to crawl
-        base_url = "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=" + str(
-            cik
-        ) + "&type=13F&dateb=" + str(
-            priorto
         base_url = EDGAR_REQUEST_URL + str(cik) + "&type=13F&dateb=" + str(
+            prior_to
         ) + "&owner=exclude&output=xml&count=" + str(count)
-        print("started 10-Q " + str(company_code))
+        print("started 10-Q " + str(cik))
         r = requests.get(base_url)
         data = r.text
 
@@ -146,15 +62,13 @@ class SecCrawler():
 
         try:
             self.save_in_directory(
-                company_code, cik, priorto, doc_list, doc_name_list, '13-F'
+                cik, prior_to, doc_list, doc_name_list, '13-F'
             )
         except Exception as e:
             print(str(e))
-
-        print("Successfully downloaded all the files")
 
     def create_document_list(self, data):
-        # parse fetched data using beatifulsoup
+        # parse fetched data using BeautifulSoup
         soup = BeautifulSoup(data)
         # store the link in the list
         link_list = list()
