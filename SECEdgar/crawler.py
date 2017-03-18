@@ -29,16 +29,16 @@ class SecCrawler():
                     raise
 
     def save_in_directory(
-        self, company_code, cik, priorto, doc_list, doc_name_list, filing_type
+        self, company_code, cik, prior_to, doc_list, doc_name_list, filing_type
     ):
         # Save every text document into its respective folder
-        for j in range(len(doc_list)):
-            base_url = doc_list[j]
-            r = requests.get(base_url)
-            data = r.text
+        for i, base_url in enumerate(doc_list):
+
             path = os.path.join(
-                self.output, company_code, cik, filing_type, doc_name_list[j]
+                self.output, company_code, cik, filing_type, doc_name_list[i]
             )
+
+            data = requests.get(base_url).text
 
             with open(path, "ab") as f:
                 f.write(data.encode('ascii', 'ignore'))
