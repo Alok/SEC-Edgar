@@ -9,12 +9,19 @@ from subprocess import call
 from glob import glob
 from os.path import splitext, basename, join as pjoin
 
-SUPPORTED_VERSIONS = ['2.5', '2.6', '2.7', 'PyPy', ]
+SUPPORTED_VERSIONS = [
+    '2.5',
+    '2.6',
+    '2.7',
+    'PyPy',
+]
 
 if sys.version_info <= (2, 4):
     version = '.'.join([str(x) for x in sys.version_info[:3]])
-    print('Version ' + version + ' is not supported. Supported versions are ' +
-          ', '.join(SUPPORTED_VERSIONS))
+    print(
+        'Version ' + version + ' is not supported. Supported versions are ' +
+        ', '.join(SUPPORTED_VERSIONS)
+    )
     sys.exit(1)
 
 setup(
@@ -36,17 +43,21 @@ setup(
     cmdclass={
         'install': install,
     },
-    install_requires=['requests', 'beautifulsoup4', 'configparser',],
+    install_requires=[
+        'requests',
+        'beautifulsoup4',
+        'configparser',
+    ],
     keywords=['SEC', 'Edgar', 'Crawler', 'filings'],
     tests_require=['unittest2'],
     classifiers=[
         'Environment :: Console',
         'License :: OSI Approved :: Apache Software License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
+        'Operating System :: OS Independent', 'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Programming Language :: Python :: 2.5',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: Implementation :: PyPy']
+        'Programming Language :: Python :: Implementation :: PyPy'
+    ]
 )
